@@ -133,6 +133,20 @@ version to alias::
     Hello 2.0!
 
 
+## Directories
+
+By default, ``urt`` only mounts the current working directory. To have
+``urt`` mount other directories, add the following to ``~/.urt/config``::
+
+    directories=[
+        "/home/admin"
+    ]
+
+The directories will be mounted from and to the same place in the container.
+This is so when you run commands and get errors back, the path name will
+match the host's directory name.
+
+
 ## Sharing with a Urtfile
 
 A project can include a ``Urtfile`` that describes all
@@ -148,6 +162,16 @@ the utilities the team uses for the project::
 To pull all the images specified in ``Urtfile``::
 
     $ urt --pull
+
+## Directories
+
+To mount the project directory when running commands in the ``Urtfile`` 
+directory, add it to the ``Urtfile``::
+
+    directories=[
+        "${URTFILE_DIR}"
+    ]
+
 
 ### Urtfile Scripts
 
@@ -178,5 +202,28 @@ aliases when you change to the ``Urtfile`` directory or one of its children,
 add the following to your shell::
 
     (TODO whatever magic makes this work)
+
+## Making images for urt
+
+Practically any Docker or OCI image is automatically compatible with ``urt``.
+
+### Urt command
+
+By default, ``urt`` will run the entrypoint or command of an image. 
+However, the author of an image may not want to ``urt`` to use that command. 
+For example, the image may normally run a webserver, but ``urt`` should
+run debugger. To change the urt command, add a ``LABEL`` to the image::
+
+    LABEL=io.urtcli.command=/bin/debug
+
+``urt`` will now run this command instead of the default entrypoint or command.
+
+### Open Ports
+
+If your ``urt`` command runs some sort of server, you probably want ports 
+opened on the host::
+
+    LABEL=io.urtcli.ports=[8080]
+
 
 
